@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal, QAbstractListModel
 #import PyQt5
-# https://stackoverflow.com/questions/26698628/mvc-design-with-qt-designer-and-pyqt-pyside
+
 
 
 class Model(QObject):
