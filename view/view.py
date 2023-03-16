@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import pyqtSlot
 from ErrorViewerGui.view.ErrorViewer import Ui_Dialog
 class MainView(QtWidgets.QDialog):
     def __init__(self, model, main_controller):
@@ -8,22 +9,28 @@ class MainView(QtWidgets.QDialog):
         self._ui = Ui_Dialog()
         self._ui.setupUi(self)
 
+        # listen for model event signals
+        self._model.resultsStrChanged.connect(self.onResultsChanged)
+        self._model.websitesChanged.connect(self.onWebsitesChanged)
+
         # initialize combo box
-        websiteList = self.GetWebsites()
-        for website in websiteList:
-            self._ui.comboBox.addItem(website)
+        self.GetWebsites()
 
 
     def GetWebsites(self):
         self._main_controller.getWebsites()
-        websiteList = self._model.websiteList
-        return websiteList
 
     def GetErrors(self):
         # get website from combobox
         website = self._ui.comboBox.currentText()
         # controller sets 'resultsStr' property in model
         self._main_controller.GetErrors(website)
-        resultsStr = self._model.resultsStr
-        # resultsStr value is displayed in textEdit box
-        self._ui.errorResultsEdit.setPlainText(resultsStr)
+
+    @pyqtSlot(str)
+    def onResultsChanged(self, value):
+        self._ui.errorResultsEdit.setPlainText(value)
+
+    @pyqtSlot(list)
+    def onWebsitesChanged(self, websiteList):
+        for website in websiteList:
+            self._ui.comboBox.addItem(website)
